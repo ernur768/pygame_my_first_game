@@ -8,7 +8,7 @@ class LevelManager:
 
     @staticmethod
     def load_level(level_num: str) -> list:
-        f = open('levels/LEVEL_' + level_num)
+        f = open('levels/LEVEL_' + level_num + '.txt')
         level = f.read().split('\n')
         f.close()
         return level
