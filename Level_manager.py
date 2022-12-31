@@ -7,6 +7,13 @@ stone_image = pygame.image.load('images/stone.png')
 class LevelManager:
 
     @staticmethod
+    def load_level(level_num: str) -> list:
+        f = open('levels/LEVEL_' + level_num)
+        level = f.read().split('\n')
+        f.close()
+        return level
+
+    @staticmethod
     def set_level(level_skeleton: list, screen) -> list:
         tile_rects = []
         y = 0

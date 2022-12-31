@@ -1,6 +1,5 @@
 import pygame
 from Constants import *
-from Level_skeletons import *
 from Level_manager import LevelManager
 from Player import Player
 
@@ -14,9 +13,11 @@ if __name__ == '__main__':
     p = Player()
     level_manager = LevelManager()
 
+    current_level = level_manager.load_level('2')
+
     while True:
         screen.fill(WHITE)
-        tile_rects = level_manager.set_level(LEVEL_1, screen)
+        tile_rects = level_manager.set_level(current_level, screen)
 
         p.keyboard_register()
         p.move_register(tile_rects)
