@@ -13,7 +13,7 @@ if __name__ == '__main__':
     p = Player()
     level_manager = LevelManager()
 
-    current_level = level_manager.load_level('2')
+    current_level = level_manager.load_level('3')
 
     while True:
         screen.fill(WHITE)
