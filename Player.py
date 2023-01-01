@@ -2,7 +2,7 @@ from Constants import *
 import pygame
 
 
-def collision_test(rect, tiles):
+def collision_test(rect, tiles: list):
     hit_list = []
     for tile in tiles:
         if rect.colliderect(tile):
@@ -11,11 +11,37 @@ def collision_test(rect, tiles):
     return hit_list
 
 
+def block_stop_x(tiles: list, movement: list, p_rect):
+    collision_types = {'Right': False, 'Left': False}
+    hit_list = collision_test(p_rect, tiles)
+    for tile in hit_list:
+        if movement[0] > 0:
+            p_rect.right = tile.left
+            collision_types['Right'] = True
+        if movement[0] < 0:
+            p_rect.left = tile.right
+            collision_types['Left'] = True
+
+    return collision_types, p_rect
+
+
+def block_stop_y(tiles: list, movement: list, p_rect):
+    collision_types = {'Top': False, 'Bottom': False}
+    hit_list = collision_test(p_rect, tiles)
+    for tile in hit_list:
+        if movement[1] > 0:
+            p_rect.bottom = tile.top
+            collision_types['Bottom'] = True
+        if movement[1] < 0:
+            p_rect.top = tile.bottom
+            collision_types['Top'] = True
+
+    return collision_types, p_rect
+
+
 class Player:
 
     def __init__(self):
-        self.moving_right = False
-        self.moving_left = False
         self.jumping = False
         self.speed = 4
         self.start_pos = [0, 0]
@@ -23,6 +49,7 @@ class Player:
         self.jump_force = 10
         self.air_time = 0
         self.movement = [0, 0]
+        self.scroll = [0, 0]
         self.image = pygame.image.load('images/my_player.png').convert()
         self.image.set_colorkey(WHITE)
         self.p_rect = pygame.Rect(self.start_pos[0], self.start_pos[1],
@@ -35,57 +62,39 @@ class Player:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     exit()
-                if event.key == pygame.K_RIGHT:
-                    self.moving_right = True
-                if event.key == pygame.K_LEFT:
-                    self.moving_left = True
-                if event.key == pygame.K_UP:
-                    if self.air_time < 6:
-                        self.momentum_y = -self.jump_force
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_RIGHT:
-                    self.moving_right = False
-                if event.key == pygame.K_LEFT:
-                    self.moving_left = False
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_a]:
+            self.movement[0] -= self.speed
+        if keys[pygame.K_d]:
+            self.movement[0] += self.speed
+        if keys[pygame.K_SPACE]:
+            if self.air_time < 10:
+                self.momentum_y = -self.jump_force
 
     def move_register(self, tile_rects):
-        self.movement = [0, 0]
-        if self.moving_right:
-            self.movement[0] += self.speed
-        if self.moving_left:
-            self.movement[0] -= self.speed
         self.movement[1] += self.momentum_y
-        self.momentum_y += ((0.3 * self.air_time) / 2)
+        self.momentum_y += (3 * self.air_time * self.air_time)
         if self.momentum_y > 5:
             self.momentum_y = 5
 
-        collision_types = self.move(tile_rects)
+        self.p_rect.x += self.movement[0]
+        collision_types_x, self.p_rect = block_stop_x(tile_rects, self.movement, self.p_rect)
+        self.p_rect.y += self.movement[1]
+        collision_types_y, self.p_rect = block_stop_y(tile_rects, self.movement, self.p_rect)
 
-        if collision_types['Bottom'] or collision_types['Top']:
+        if collision_types_x['Left'] or collision_types_x['Right']:
+            self.momentum_y = 0
+            self.air_time = 1
+
+        if collision_types_y['Bottom']:
             self.momentum_y = 0
             self.air_time = 1
         else:
             self.air_time += 1
 
-    def move(self, tiles: list):
-        collision_types = {'Top': False, 'Bottom': False, 'Right': False, 'Left': False}
-        self.p_rect.x += self.movement[0]
-        hit_list = collision_test(self.p_rect, tiles)
-        for tile in hit_list:
-            if self.movement[0] > 0:
-                self.p_rect.right = tile.left
-                collision_types['Right'] = True
-            if self.movement[0] < 0:
-                self.p_rect.left = tile.right
-                collision_types['Left'] = True
-        self.p_rect.y += self.movement[1]
-        hit_list = collision_test(self.p_rect, tiles)
-        for tile in hit_list:
-            if self.movement[1] > 0:
-                self.p_rect.bottom = tile.top
-                collision_types['Bottom'] = True
-            if self.movement[1] < 0:
-                self.p_rect.top = tile.bottom
-                collision_types['Top'] = True
+        self.movement = [0, 0]
 
-        return collision_types
+    def camera_scroll(self):
+        self.scroll[0] += (self.p_rect.x - self.scroll[0] - (SCREEN_SIZE[0] - PLAYER_WIDTH) // 2) // 10
+        self.scroll[1] += (self.p_rect.y - self.scroll[1] - (SCREEN_SIZE[1] - PLAYER_HEIGHT) // 2) // 10
