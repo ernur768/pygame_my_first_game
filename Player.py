@@ -1,8 +1,16 @@
 from Constants import *
+from animation_database import animation_image_database, animation_database
 import pygame
 
 
-def collision_test(rect, tiles: list):
+def change_action(action_var: str, frame: int, new_value: str):
+    if action_var != new_value:
+        action_var = new_value
+        frame = 0
+    return action_var, frame
+
+
+def collision_test(rect: pygame.Rect, tiles: list) -> list:
     hit_list = []
     for tile in tiles:
         if rect.colliderect(tile):
@@ -11,7 +19,7 @@ def collision_test(rect, tiles: list):
     return hit_list
 
 
-def block_stop_x(tiles: list, movement: list, p_rect):
+def block_stop_x(tiles: list, movement: list, p_rect: pygame.Rect):
     collision_types = {'Right': False, 'Left': False}
     hit_list = collision_test(p_rect, tiles)
     for tile in hit_list:
@@ -25,7 +33,7 @@ def block_stop_x(tiles: list, movement: list, p_rect):
     return collision_types, p_rect
 
 
-def block_stop_y(tiles: list, movement: list, p_rect):
+def block_stop_y(tiles: list, movement: list, p_rect: pygame.Rect):
     collision_types = {'Top': False, 'Bottom': False}
     hit_list = collision_test(p_rect, tiles)
     for tile in hit_list:
@@ -42,7 +50,9 @@ def block_stop_y(tiles: list, movement: list, p_rect):
 class Player:
 
     def __init__(self):
-        self.jumping = False
+        self.animation_frame = 0
+        self.flip = False
+        self.action = 'stand'
         self.speed = 4
         self.start_pos = [0, 0]
         self.momentum_y = 0
@@ -55,7 +65,23 @@ class Player:
         self.p_rect = pygame.Rect(self.start_pos[0], self.start_pos[1],
                                   self.image.get_width(), self.image.get_height())
 
-    def keyboard_register(self):
+    def animation_register(self) -> None:
+        if self.movement[0] < 0:
+            self.action, self.animation_frame = change_action(self.action, self.animation_frame, 'run')
+            self.flip = True
+        if self.movement[0] == 0:
+            self.action, self.animation_frame = change_action(self.action, self.animation_frame, 'stand')
+        if self.movement[0] > 0:
+            self.action, self.animation_frame = change_action(self.action, self.animation_frame, 'run')
+            self.flip = False
+
+        self.animation_frame += 1
+        if self.animation_frame == len(animation_database[self.action]):
+            self.animation_frame = 0
+        player_img_id = animation_database[self.action][self.animation_frame]
+        self.image = animation_image_database[player_img_id]
+
+    def keyboard_register(self) -> None:
         self.movement = [0, 0]
 
         for event in pygame.event.get():
@@ -74,7 +100,7 @@ class Player:
             if self.air_time < 10:
                 self.momentum_y = -self.jump_force
 
-    def move_register(self, tile_rects):
+    def move_register(self, tile_rects: list) -> None:
         self.movement[1] += self.momentum_y
         self.momentum_y += (3 * self.air_time * self.air_time)
         if self.momentum_y > 5:
@@ -91,6 +117,6 @@ class Player:
         else:
             self.air_time += 1
 
-    def camera_scroll(self):
+    def camera_scroll(self) -> None:
         self.scroll[0] += (self.p_rect.x - self.scroll[0] - (SCREEN_SIZE[0] - PLAYER_WIDTH) // 2) // 10
         self.scroll[1] += (self.p_rect.y - self.scroll[1] - (SCREEN_SIZE[1] - PLAYER_HEIGHT) // 2) // 10

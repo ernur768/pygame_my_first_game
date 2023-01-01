@@ -14,7 +14,7 @@ class LevelManager:
         return level
 
     @staticmethod
-    def set_level(level_skeleton: list, screen, scroll) -> list:
+    def set_level(level_skeleton: list, screen: pygame.Surface, scroll: list) -> list:
         tile_rects = []
         y = 0
         for row in level_skeleton:
