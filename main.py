@@ -3,6 +3,7 @@ from Constants import *
 from Level_manager import LevelManager
 from Player import Player
 
+
 if __name__ == '__main__':
     pygame.init()
     clock = pygame.time.Clock()
@@ -17,7 +18,6 @@ if __name__ == '__main__':
     background = pygame.image.load('images/background_v4.png').convert()
 
     while True:
-        screen.fill(WHITE)
         screen.blit(background, (0.01 * (p.p_rect.x - p.scroll[0] - SCREEN_SIZE[0] // 2),
                                  0.01 * (p.p_rect.y - p.scroll[1] - SCREEN_SIZE[1] // 2)))
 

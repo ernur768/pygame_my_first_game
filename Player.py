@@ -83,10 +83,6 @@ class Player:
         self.p_rect.y += self.movement[1]
         collision_types_y, self.p_rect = block_stop_y(tile_rects, self.movement, self.p_rect)
 
-        if collision_types_x['Left'] or collision_types_x['Right']:
-            self.momentum_y = 0
-            self.air_time = 1
-
         if collision_types_y['Bottom']:
             self.momentum_y = 0
             self.air_time = 1
