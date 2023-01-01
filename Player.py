@@ -56,6 +56,8 @@ class Player:
                                   self.image.get_width(), self.image.get_height())
 
     def keyboard_register(self):
+        self.movement = [0, 0]
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
@@ -88,8 +90,6 @@ class Player:
             self.air_time = 1
         else:
             self.air_time += 1
-
-        self.movement = [0, 0]
 
     def camera_scroll(self):
         self.scroll[0] += (self.p_rect.x - self.scroll[0] - (SCREEN_SIZE[0] - PLAYER_WIDTH) // 2) // 10
