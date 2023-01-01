@@ -4,26 +4,31 @@ from Level_manager import LevelManager
 from Player import Player
 
 # ----------------------------------------------------------------------------
-global animation_frames # self.animation_frames
-animation_frames = {}
+animation_image_database = {}
 
 
-def load_animation(path: str, frame_duration):# make class method
-    global animation_frames
-    animation_name = path.split('/')[-1]
-    animation_frame_data = []
-    n = 0
-    for frame in frame_duration:
-        animation_frame_id = animation_name + '_' + str(n)
-        image_loc = path + '/' + animation_frame_id + '.png'
-        animation_image = pygame.image.load(image_loc)
-        animation_image.set_colorkey(WHITE)
-        animation_frames[animation_frame_id] = animation_image.copy()
-        for i in range(frame):
-            animation_frame_data.append(animation_frame_id)
-        n += 1
+def add_to_image_database(animation_name: str, image_num: int) -> None:
+    global animation_image_database
+    for i in range(image_num):
+        image_name = animation_name + '_' + str(i)
+        image = pygame.image.load('animations/' + animation_name + '/' + image_name + '.png')
+        image.set_colorkey(WHITE)
+        animation_image_database[image_name] = image.copy()
 
-    return animation_frame_data
+
+def get_animation(animation_name: str, animation_duration: list) -> list:
+    animation = []
+
+    image_num = 0
+    for frame_num in animation_duration:
+
+        image_name = animation_name + '_' + str(image_num)
+
+        for i in range(frame_num):
+            animation.append(image_name)
+        image_num += 1
+
+    return animation
 
 
 def change_action(action_var, frame, new_value):
@@ -33,11 +38,14 @@ def change_action(action_var, frame, new_value):
     return action_var, frame
 
 
-animation_database = {'idle': load_animation('animations/stand', [15, 7]),
-                      'run': load_animation('animations/run', [7, 7])}
+animation_database = {'stand': get_animation('stand', [15, 7]),
+                      'run': get_animation('run', [7, 7])}
 
-player_action = 'idle'
-player_frame = 0
+add_to_image_database('stand', 2)
+add_to_image_database('run', 2)
+
+player_action = 'stand'
+animation_frame = 0
 player_flip = False
 # --------------------------------------------------------------------------------------------
 
@@ -66,22 +74,23 @@ if __name__ == '__main__':
 
 # ---------------------------------------------------------------------------------------------
         if p.movement[0] < 0:
-            player_action, player_frame = change_action(player_action, player_frame, 'run')
+            player_action, animation_frame = change_action(player_action, animation_frame, 'run')
             player_flip = True
         if p.movement[0] == 0:
-            player_action, player_frame = change_action(player_action, player_frame, 'idle')
+            player_action, animation_frame = change_action(player_action, animation_frame, 'stand')
         if p.movement[0] > 0:
-            player_action, player_frame = change_action(player_action, player_frame, 'run')
+            player_action, animation_frame = change_action(player_action, animation_frame, 'run')
             player_flip = False
 
-        player_frame += 1
-        if player_frame == len(animation_database[player_action]):
-            player_frame = 0
-        player_img_id = animation_database[player_action][player_frame]
-        p.image = animation_frames[player_img_id]
+        animation_frame += 1
+        if animation_frame == len(animation_database[player_action]):
+            animation_frame = 0
+        player_img_id = animation_database[player_action][animation_frame]
+        p.image = animation_image_database[player_img_id]
 # ----------------------------------------------------------------------------------------------
 
-        screen.blit(pygame.transform.flip(p.image, player_flip, False), (p.p_rect.x - p.scroll[0], p.p_rect.y - p.scroll[1]))
+        screen.blit(pygame.transform.flip(p.image, player_flip, False),
+                    (p.p_rect.x - p.scroll[0], p.p_rect.y - p.scroll[1]))
         window.blit(pygame.transform.scale(screen, WINDOW_SIZE), (0, 0))
         pygame.display.update()
         clock.tick(FPS)
