@@ -56,14 +56,13 @@ class Player:
         self.speed = 4
         self.start_pos = [0, 0]
         self.momentum_y = 0
-        self.jump_force = 10
+        self.jump_force = 20
         self.air_time = 0
         self.movement = [0, 0]
         self.scroll = [0, 0]
         self.image = pygame.image.load('images/my_player.png').convert()
         self.image.set_colorkey(WHITE)
-        self.p_rect = pygame.Rect(self.start_pos[0], self.start_pos[1],
-                                  self.image.get_width(), self.image.get_height())
+        self.p_rect = pygame.Rect(self.start_pos[0], self.start_pos[1], PLAYER_WIDTH, PLAYER_HEIGHT)
 
     def animation_register(self) -> None:
         if self.movement[0] < 0:
