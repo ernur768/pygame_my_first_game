@@ -56,7 +56,7 @@ class Player:
         self.speed = 4
         self.start_pos = [0, 0]
         self.momentum_y = 0
-        self.jump_force = 20
+        self.jump_force = 10
         self.air_time = 0
         self.movement = [0, 0]
         self.scroll = [0, 0]
@@ -101,7 +101,7 @@ class Player:
 
     def move_register(self, tile_rects: list) -> None:
         self.movement[1] += self.momentum_y
-        self.momentum_y += (3 * self.air_time * self.air_time)
+        self.momentum_y += (3 * self.air_time)
         if self.momentum_y > 5:
             self.momentum_y = 5
 

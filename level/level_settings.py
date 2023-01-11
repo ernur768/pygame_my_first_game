@@ -2,6 +2,8 @@ import pygame
 
 
 stone_image = pygame.image.load('images/stone.png')
+red_image = pygame.image.load('images/red.png')
+
 
 LEVELS = {'2': {'enemy_num': 2,
                 'enemy_pos': [[352, 160], [928, 160]],
