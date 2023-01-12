@@ -1,5 +1,6 @@
 from Enemy import Enemy
 from Player import Player
+import Bullet
 from Constants import *
 from level.level_settings import *
 
@@ -41,6 +42,9 @@ class LevelManager:
 
         screen.blit(pygame.transform.flip(player.image, player.flip, False),
                     (player.p_rect.x - player.scroll[0], player.p_rect.y - player.scroll[1]))
+
+        for bullet in Bullet.bullet_list:
+            screen.blit(bullet.image, (bullet.rect.x - player.scroll[0], bullet.rect.y - player.scroll[1]))
 
     @staticmethod
     def set_level(level_skeleton: list, screen: pygame.Surface, scroll: list) -> list:

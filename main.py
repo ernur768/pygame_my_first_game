@@ -1,7 +1,11 @@
+import pygame
+
 from Level_manager import LevelManager
 from Player import Player
 from Constants import *
 from level.level_settings import *
+import Bullet
+
 
 if __name__ == '__main__':
     pygame.init()
@@ -25,6 +29,16 @@ if __name__ == '__main__':
         p.keyboard_register()
         p.move_register(tile_rects)
         p.animation_register()
+
+        Bullet.bullet_action(Bullet.bullet_list)
+        for bullet in Bullet.bullet_list:
+            bullet.collisions(p, level_manager.enemies, tile_rects)
+
+        for enemy in level_manager.enemies:
+            if enemy.health <= 0:
+                enemy.speed = 0
+                enemy.rect.x = 0
+                enemy.rect.y = 0
 
         level_manager.blit_images(level_manager.enemies, screen, p, level_manager.current_level)
 

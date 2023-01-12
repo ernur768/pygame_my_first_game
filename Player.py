@@ -1,6 +1,8 @@
 from Constants import *
 from animation_database import animation_image_database, animation_database
 import pygame
+from Bullet import Bullet
+from Bullet import bullet_list
 
 
 def change_action(action_var: str, frame: int, new_value: str):
@@ -50,7 +52,10 @@ def block_stop_y(tiles: list, movement: list, p_rect: pygame.Rect):
 class Player:
 
     def __init__(self):
+        self.reload = 0
         self.animation_frame = 0
+        self.health = 100
+        self.shoot = False
         self.flip = False
         self.action = 'stand'
         self.speed = 4
@@ -89,6 +94,10 @@ class Player:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     exit()
+                if event.key == pygame.K_j and self.reload < 0:
+                    self.shoot = True
+                if event.key == pygame.K_k:
+                    print(self.p_rect.x)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
@@ -110,11 +119,25 @@ class Player:
         self.p_rect.y += self.movement[1]
         collision_types_y, self.p_rect = block_stop_y(tile_rects, self.movement, self.p_rect)
 
+        self.reload -= 1
+
         if collision_types_y['Bottom']:
             self.momentum_y = 0
             self.air_time = 1
         else:
             self.air_time += 1
+
+        if self.shoot:
+            self.reload = 60
+            self.action = 'player shoot'
+            if self.flip:
+                bullet_list.append(Bullet(self.p_rect.x - 1, self.p_rect.y + 5, self.flip))
+            else:
+                bullet_list.append(Bullet(self.p_rect.x + 7, self.p_rect.y + 5, self.flip))
+
+            self.shoot = False
+            #class Bullet creates new obj and adds it to list
+
 
     def camera_scroll(self) -> None:
         self.scroll[0] += (self.p_rect.x - self.scroll[0] - (SCREEN_SIZE[0] - PLAYER_WIDTH) // 2) // 10
