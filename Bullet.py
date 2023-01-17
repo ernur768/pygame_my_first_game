@@ -35,14 +35,14 @@ class Bullet:
             if self.rect.colliderect(enemy.rect):
                 enemy.health -= 1
                 self.active = False
-                bullet_list.remove(self.rect)
+                # bullet_list.remove(self.rect)
                 self.rect.x = 0
                 self.rect.y = 0
 
         for tile in tiles:
             if self.rect.colliderect(tile):
                 self.active = False
-                bullet_list.remove(self.rect)
+                # bullet_list.remove(self.rect)
                 self.rect.x = 0
                 self.rect.y = 0
 
