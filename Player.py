@@ -54,7 +54,7 @@ class Player:
     def __init__(self):
         self.reload = 0
         self.animation_frame = 0
-        self.health = 100
+        self.health = 30
         self.shoot = False
         self.flip = False
         self.action = 'stand'
@@ -98,6 +98,8 @@ class Player:
                     self.shoot = True
                 if event.key == pygame.K_k:
                     print(self.p_rect.x)
+                if event.key == pygame.K_l:
+                    print(self.p_rect.y)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
@@ -131,9 +133,9 @@ class Player:
             self.reload = 60
             self.action = 'player shoot'
             if self.flip:
-                bullet_list.append(Bullet(self.p_rect.x - 1, self.p_rect.y + 5, self.flip))
+                bullet_list.append(Bullet(self.p_rect.x - 1, self.p_rect.y + 15, self.flip))
             else:
-                bullet_list.append(Bullet(self.p_rect.x + 7, self.p_rect.y + 5, self.flip))
+                bullet_list.append(Bullet(self.p_rect.x + 7, self.p_rect.y + 15, self.flip))
 
             self.shoot = False
             #class Bullet creates new obj and adds it to list

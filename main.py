@@ -18,8 +18,11 @@ if __name__ == '__main__':
     level_manager = LevelManager()
 
     background = pygame.image.load('images/background_v4.png').convert()
+    run = True
+    while run:
+        if p.health <= 0:
+            run = False
 
-    while True:
         screen.blit(background, (0.01 * (p.p_rect.x - p.scroll[0] - SCREEN_SIZE[0] // 2),
                                  0.01 * (p.p_rect.y - p.scroll[1] - SCREEN_SIZE[1] // 2)))
 
