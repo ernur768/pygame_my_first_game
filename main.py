@@ -12,6 +12,8 @@ import Bullet
 
 # test 3
 
+# TEST 4
+
 
 if __name__ == '__main__':
     pygame.init()
