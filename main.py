@@ -6,6 +6,8 @@ from Constants import *
 from level.level_settings import *
 import Bullet
 
+# test
+
 
 if __name__ == '__main__':
     pygame.init()
